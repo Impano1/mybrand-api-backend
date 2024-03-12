@@ -29,7 +29,7 @@ const router = express.Router();
  *                 type: string
  *               image:
  *                 type: string
- *                 format:binary
+ *                 format: binary
  *               description:
  *                 type: string
  *     responses:
