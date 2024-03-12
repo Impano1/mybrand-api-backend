@@ -1,7 +1,7 @@
 /node_modules
 /dist
 /build
-/uploads/**/**
+/uploads/*
 .env
 .vscode
 .idea
