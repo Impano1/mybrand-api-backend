@@ -44,6 +44,10 @@ const swaggerOptions = {
           url: `http://localhost:${PORT}`,
           description: '',
         },
+        {
+          url: `https://mybrand-api-backend.onrender.com`,
+          description: 'deployed server',
+        },
       ],
       components: {
         securitySchemes: {
@@ -62,7 +66,7 @@ const swaggerOptions = {
   
   // Swagger setup
   const swaggerSpec = swaggerJsdoc(swaggerOptions);
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Connect to MongoDB
 const mongoURI = process.env.MONGODB_URI;
