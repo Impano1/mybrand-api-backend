@@ -15,7 +15,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 // Middleware
 // app.use(cors());
@@ -23,12 +23,12 @@ const PORT = process.env.PORT || 5000;
 app.use(bodyParser.json());
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/blogs', blogRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/likes', likeRoutes);
-app.use('/api/comments', commentRoutes);
+app.use('/auth', authRoutes);
+app.use('/blogs', blogRoutes);
+app.use('/messages', messageRoutes);
+app.use('/users', userRoutes);
+app.use('/likes', likeRoutes);
+app.use('/comments', commentRoutes);
 
 // Swagger setup
 const swaggerOptions = {

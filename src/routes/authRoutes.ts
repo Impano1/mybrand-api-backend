@@ -15,7 +15,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /signup:
+ * /auth/signup:
  *   post:
  *     summary: User signup
  *     tags: [Authentication]
@@ -47,7 +47,7 @@ router.post('/signup', signup);
 
 /**
  * @swagger
- * /login:
+ * /auth/login:
  *   post:
  *     summary: User login
  *     tags: [Authentication]
@@ -76,7 +76,7 @@ router.post('/login', login);
 
 /**
  * @swagger
- * /admin/signup:
+ * /auth/admin/signup:
  *   post:
  *     summary: Create an admin user
  *     tags: [Authentication]

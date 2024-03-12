@@ -50,8 +50,8 @@ export const login = async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        const token = jwt.sign({ email: user.email, role: user.role }, jwtSecret!);
-        res.json({ token, role: user.role });
+        const token = jwt.sign({ email: user.email, username: user.username, role: user.role }, jwtSecret!);
+        res.json({ token, username: user.username, role: user.role });
     } catch (err) {
         res.status(500).json({ message: 'Internal server error' });
     }

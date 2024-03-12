@@ -1,5 +1,6 @@
 import express from 'express';
-import { likeBlog, getLikes } from '../controllers/likeController';
+import { likeBlog, getLikesForBlog, unlikeBlog} from '../controllers/likeController';
+import { authenticateToken, authorizeAdmin } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
@@ -12,50 +13,60 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/likes/{id}:
+ * /likes/{id}:
  *   post:
- *     summary: Like a blog post
+ *     summary: Like a blog
+ *     description: Like a specific blog by its ID
  *     tags: [Likes]
  *     parameters:
  *       - in: path
  *         name: id
+ *         description: ID of the blog to like
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the blog post to like
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Blog post liked successfully
- *       400:
- *         description: Bad request, user already liked the post
+ *         description: Blog liked successfully
+ *       401:
+ *         description: Unauthorized - user not authenticated
  *       404:
- *         description: Blog post not found
+ *         description: Blog not found
  *       500:
  *         description: Internal server error
- */
-router.post('/:id', likeBlog);
+ */  
+
+
+
+
+router.post('/:id', authenticateToken, likeBlog);
 
 /**
  * @swagger
- * /api/likes/{id}:
+ * /likes/{id}:
  *   get:
- *     summary: Get all likes for a blog post
+ *     summary: Get likes for a blog
+ *     description: Retrieve the number of likes for a specific blog by its ID
  *     tags: [Likes]
  *     parameters:
  *       - in: path
  *         name: id
+ *         description: ID of the blog to get likes for
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the blog post
  *     responses:
  *       200:
- *         description: List of users who liked the blog post
+ *         description: Number of likes retrieved successfully
  *       404:
- *         description: Blog post not found
+ *         description: Blog not found
  *       500:
  *         description: Internal server error
  */
-router.get('/:id', getLikes);
+router.get('/:id', getLikesForBlog);
+
+router.post('/unlike/:id', unlikeBlog);
 
 export default router;

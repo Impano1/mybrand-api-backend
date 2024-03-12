@@ -1,55 +1,93 @@
 import { Request, Response } from 'express';
-import Blog from '../models/Blog';
+import { Comment } from '../models/comment';
+import { Blog } from '../models/Blog';
 
-/**
- * Add a comment to a blog post
- * @param req Request object
- * @param res Response object
- */
+
 interface AuthRequest extends Request {
-    user?: any; // Define the user property
+    user?: { id: string; username: string }; // Define the user property with proper typing
 }
-
 
 export const addComment = async (req: AuthRequest, res: Response) => {
     try {
-        const blogId = req.params.id;
+        
+        
         const { text } = req.body;
-        const userEmail = req.user.email;
+        const { id: blogId } = req.params; // Extract blogId from request parameters
+        const username = req.user?.username; // Fetch username from req.user
 
-        const blog = await Blog.findById(blogId);
-        if (!blog) {
-            return res.status(404).json({ message: 'Blog post not found' });
+        if (!text || !blogId || !username) { // Check if username exists
+            return res.status(400).json({ message: 'Text field, blogId, and username are required' });
         }
 
-        blog.comments.push({ text, user: userEmail });
-        await blog.save();
+        const comment = new Comment({
+            text,
+            user: username,
+            blog: blogId,
+        });
+
+        await comment.save();
+
+        await Blog.findByIdAndUpdate(blogId, { $inc: { commentsNo: 1 } });
 
         res.status(201).json({ message: 'Comment added successfully' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 };
 
-/**
- * Get all comments for a blog post
- * @param req Request object
- * @param res Response object
- */
-export const getComments = async (req: Request, res: Response) => {
+
+
+
+export const getCommentsForBlog = async (req: Request, res: Response) => {
     try {
-        const blogId = req.params.id;
+        const { id: blogId } = req.params;
+
+       
 
         const blog = await Blog.findById(blogId);
         if (!blog) {
-            return res.status(404).json({ message: 'Blog post not found' });
+            console.log('Blog not found for blogId:', blogId);
+            return res.status(404).json({ message: 'Blog not found' });
         }
 
-        const comments = blog.comments;
+        const comments = await Comment.find({ blog: blogId }).populate('user', 'username');
+        if (!comments || comments.length === 0) {
+            return res.status(404).json({ message: 'No comments found for this blog' });
+        }
+
         res.json(comments);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
+    } catch (error) {
+        console.error('Error retrieving blog comments:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+
+
+
+
+
+
+
+
+
+export const deleteComment = async (req: Request, res: Response) => {
+    try {
+        const { commentId } = req.params;
+
+        const comment = await Comment.findByIdAndDelete(commentId);
+
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        // Update commentsCount in Blog model
+        await Blog.findByIdAndUpdate(comment.blog, { $inc: { commentsCount: -1 } });
+
+        res.json({ message: 'Comment deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
 };

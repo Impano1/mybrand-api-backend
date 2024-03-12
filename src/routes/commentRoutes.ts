@@ -1,5 +1,6 @@
 import express from 'express';
-import { addComment, getComments } from '../controllers/commentController';
+import { addComment, getCommentsForBlog } from '../controllers/commentController';
+import { authenticateToken, authorizeAdmin } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
@@ -12,54 +13,64 @@ const router = express.Router();
 
 /**
  * @swagger
- * /api/comments/{id}:
+ * /comments/{id}:
  *   post:
  *     summary: Add a comment to a blog post
  *     tags: [Comments]
+ *     description: Add a comment to a specific blog post by its ID
  *     parameters:
  *       - in: path
  *         name: id
+ *         description: ID of the blog post to comment on
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the blog post to comment on
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Comment'
+ *             type: object
+ *             properties:
+ *               text:
+ *                 type: string
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       201:
  *         description: Comment added successfully
+ *       400:
+ *         description: Text field, blogId, and username are required
  *       404:
- *         description: Blog post not found
+ *         description: Blog not found
  *       500:
  *         description: Internal server error
  */
-router.post('/:id', addComment);
+
+router.post('/:id',authenticateToken, addComment);
 
 /**
  * @swagger
- * /api/comments/{id}:
+ * /comments/{id}:
  *   get:
- *     summary: Get all comments for a blog post
+ *     summary: Get comments for a blog post
  *     tags: [Comments]
+ *     description: Retrieve comments for a specific blog post by its ID
  *     parameters:
  *       - in: path
  *         name: id
+ *         description: ID of the blog post to get comments for
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the blog post
  *     responses:
  *       200:
- *         description: List of comments on the blog post
+ *         description: Comments retrieved successfully
  *       404:
- *         description: Blog post not found
+ *         description: Blog not found or no comments found for this blog
  *       500:
  *         description: Internal server error
  */
-router.get('/:id', getComments);
+router.get('/:id',authenticateToken, getCommentsForBlog);
 
 export default router;
