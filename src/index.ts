@@ -53,7 +53,7 @@ const swaggerOptions = {
           description: '',
         },
         {
-          url: `https://api-furahax.onrender.com`,
+          url: `https://mybrand-api-backend.onrender.com`,
           description: 'Server deployed',
         },
       ],
