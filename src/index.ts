@@ -13,18 +13,19 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import cors from 'cors';
 
+
+
+
 dotenv.config();
 
-const app = express();
+export const app = express();
 const PORT = process.env.PORT;
 
 // Middleware
-// app.use(cors());
+app.use(cors());
 // app.use(express.json());
 app.use(bodyParser.json());
-app.use(cors(
-  {origin: 'http://127.0.0.1:5500',}
-));
+
 // Routes
 app.use('/auth', authRoutes);
 app.use('/blogs', blogRoutes);
@@ -35,6 +36,7 @@ app.use('/comments', commentRoutes);
 
 // Serve static files from the "uploads" directory
 app.use('/images', imageRoutes);
+
 
 // Swagger setup
 const swaggerOptions = {
@@ -51,8 +53,8 @@ const swaggerOptions = {
           description: '',
         },
         {
-          url: `https://mybrand-api-backend.onrender.com`,
-          description: 'deployed server',
+          url: `https://api-furahax.onrender.com`,
+          description: 'Server deployed',
         },
       ],
       components: {
@@ -72,7 +74,7 @@ const swaggerOptions = {
   
   // Swagger setup
   const swaggerSpec = swaggerJsdoc(swaggerOptions);
-  app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Connect to MongoDB
 const mongoURI = process.env.MONGODB_URI;
@@ -90,10 +92,11 @@ const options: any = {
 mongoose.connect(mongoURI, options)
 .then(() => {
     console.log('Connected to MongoDB');
-
-      //  Start the server
-      const PORT = 5000;
-      app.listen(PORT, () => {
+    // Start the server
+    app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);
-      });
+    });
+})
+.catch((error) => {
+    console.error('Error connecting to MongoDB: ', error.message);
 });
