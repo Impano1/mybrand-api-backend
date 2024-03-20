@@ -8,9 +8,10 @@ import messageRoutes from './routes/messageRoutes';
 import userRoutes from './routes/userRoutes';
 import likeRoutes from './routes/likeRoutes';
 import commentRoutes from './routes/commentRoutes';
+import imageRoutes from './routes/imageRoutes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
-
+import cors from 'cors';
 
 dotenv.config();
 
@@ -21,7 +22,9 @@ const PORT = process.env.PORT;
 // app.use(cors());
 // app.use(express.json());
 app.use(bodyParser.json());
-
+app.use(cors(
+  {origin: 'http://127.0.0.1:5500',}
+));
 // Routes
 app.use('/auth', authRoutes);
 app.use('/blogs', blogRoutes);
@@ -29,6 +32,9 @@ app.use('/messages', messageRoutes);
 app.use('/users', userRoutes);
 app.use('/likes', likeRoutes);
 app.use('/comments', commentRoutes);
+
+// Serve static files from the "uploads" directory
+app.use('/images', imageRoutes);
 
 // Swagger setup
 const swaggerOptions = {
@@ -84,11 +90,10 @@ const options: any = {
 mongoose.connect(mongoURI, options)
 .then(() => {
     console.log('Connected to MongoDB');
-    // Start the server
-    app.listen(PORT, () => {
+
+      //  Start the server
+      const PORT = 5000;
+      app.listen(PORT, () => {
         console.log(`Server is running on http://localhost:${PORT}`);
-    });
-})
-.catch((error) => {
-    console.error('Error connecting to MongoDB: ', error.message);
+      });
 });
